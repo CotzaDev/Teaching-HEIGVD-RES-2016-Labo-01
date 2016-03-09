@@ -19,23 +19,54 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
   private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
 
-  public FileNumberingFilterWriter(Writer out) {
+  private int number = 1;
+
+  public FileNumberingFilterWriter(Writer out) throws IOException{
     super(out);
+    // Put the number of the first line
+    super.write("1\t", 0, 2);
   }
 
   @Override
   public void write(String str, int off, int len) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    int totalLen = 0;
+
+    // '\R' matches @CRLF, @CR or @LF only. (\r\n, \r or \n)
+    // '?<=' to include the delimiter char in the part before the split
+    String[] lines = str.split("(?<=\\R)");
+
+    for(String line : lines) {
+      if(line.endsWith("\n") || line.endsWith("\r")) {
+        // Add line number for the next line after the new line char only
+        line += String.valueOf(++number) + "\t";
+        // Update the max length according to length of the line number and tab
+        len += String.valueOf(number).length() + 1;
+      }
+
+      // Check if we have to stop according to the len parameter
+      if (len < totalLen + line.length()) {
+        super.write(line, off, len - totalLen);
+        break;
+      }
+      else {
+        super.write(line, off, line.length());
+        totalLen += line.length();
+      }
+    }
   }
 
   @Override
   public void write(char[] cbuf, int off, int len) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    this.write(String.valueOf(cbuf));
   }
 
   @Override
   public void write(int c) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    super.write(c);
+
+    if((char)c == '\n') {
+      super.write(String.valueOf(++number) + "\t");
+    }
   }
 
 }
