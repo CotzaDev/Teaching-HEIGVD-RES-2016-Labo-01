@@ -165,7 +165,7 @@ public class Application implements IApplication {
         try {
           writer.write(file.getPath() + '\n');
         } catch (IOException ex) {
-          LOG.log(Level.SEVERE, null, ex.getMessage());
+          LOG.log(Level.SEVERE, null, ex);
         }
       }
     });

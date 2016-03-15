@@ -19,17 +19,21 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
   private static final Logger LOG = Logger.getLogger(FileNumberingFilterWriter.class.getName());
 
-  private int number = 1;
+  private int number = 0;
+  private char previous = ' ';
 
-  public FileNumberingFilterWriter(Writer out) throws IOException{
+  public FileNumberingFilterWriter(Writer out){
     super(out);
-    // Put the number of the first line
-    super.write("1\t", 0, 2);
   }
 
   @Override
   public void write(String str, int off, int len) throws IOException {
     int totalLen = 0;
+
+    if (number == 0) {
+      super.write("1\t", 0, 2);
+      number ++;
+    }
 
     // '\R' matches @CRLF, @CR or @LF only. (\r\n, \r or \n)
     // '?<=' to include the delimiter char in the part before the split
@@ -62,11 +66,23 @@ public class FileNumberingFilterWriter extends FilterWriter {
 
   @Override
   public void write(int c) throws IOException {
-    super.write(c);
+    if (number == 0) {
+      super.write("1\t", 0, 2);
+      number ++;
+    }
 
-    if((char)c == '\n') {
+    // \r and \r\n case
+    if (previous == '\r' && (char)c != '\n') {
       super.write(String.valueOf(++number) + "\t");
     }
+
+    super.write(c);
+
+    if ((char)c == '\n') {
+      super.write(String.valueOf(++number) + "\t");
+    }
+
+    previous = (char)c;
   }
 
 }

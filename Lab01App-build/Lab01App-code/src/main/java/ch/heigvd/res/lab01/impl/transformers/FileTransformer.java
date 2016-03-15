@@ -61,22 +61,17 @@ public abstract class FileTransformer implements IFileVisitor {
        * characters and write them to the writer.
        */
 
-      BufferedReader buffReader = new BufferedReader(reader);
-      BufferedWriter buffdWriter = new BufferedWriter(writer);
       int result;
 
       while(true) {
-        result = buffReader.read();
+        result = reader.read();
 
         // Exit the loop if there is nothing to read
         if (result == -1)
           break;
 
-        buffdWriter.write(result);
+        writer.write(result);
       }
-
-      buffReader.close();
-      buffdWriter.close();
       
       reader.close();
       writer.flush();
