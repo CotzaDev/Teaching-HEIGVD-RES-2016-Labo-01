@@ -22,13 +22,16 @@ public class DFSFileExplorer implements IFileExplorer {
     // In case of a directory we have to check all the files inside
     if (rootDirectory.isDirectory()) {
 
+      // First we visit the files
       for (File file : rootDirectory.listFiles()) {
         if (file.isFile()) {
-          // It's so file so we only visit it
           vistor.visit(file);
         }
-        else if (file.isDirectory()) {
-          // It's another directory so we have to explore it
+      }
+
+      // When the file are visited we explore the directories
+      for (File file : rootDirectory.listFiles()) {
+        if (file.isDirectory()) {
           explore(file, vistor);
         }
       }

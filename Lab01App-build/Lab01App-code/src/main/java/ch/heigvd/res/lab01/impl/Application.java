@@ -93,6 +93,9 @@ public class Application implements IApplication {
        * quote in a text file (and for generating the directories based on the tags).
        */
       LOG.info("Received a new joke with " + quote.getTags().size() + " tags.");
+
+      storeQuote(quote, "quote-" + quote.getValue().getId() + ".utf8");
+
       for (String tag : quote.getTags()) {
         LOG.info("> " + tag);
       }
@@ -125,7 +128,23 @@ public class Application implements IApplication {
    * @throws IOException 
    */
   void storeQuote(Quote quote, String filename) throws IOException {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    String path = Application.WORKSPACE_DIRECTORY;
+
+    // Generate the file path
+    for (String tag : quote.getTags()) {
+      path += "/" + tag;
+    }
+
+    new File(path).mkdirs();
+
+    File file = new File(path + "/" + filename);
+    file.createNewFile();
+
+    // Write the quotes
+    OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8" );
+    writer.write(quote.getQuote());
+
+    writer.close();
   }
   
   /**
@@ -142,13 +161,19 @@ public class Application implements IApplication {
          * of the the IFileVisitor interface inline. You just have to add the body of the visit method, which should
          * be pretty easy (we want to write the filename, including the path, to the writer passed in argument).
          */
+
+        try {
+          writer.write(file.getPath() + '\n');
+        } catch (IOException ex) {
+          LOG.log(Level.SEVERE, null, ex.getMessage());
+        }
       }
     });
   }
   
   @Override
   public String getAuthorEmail() {
-    throw new UnsupportedOperationException("The student has not implemented this method yet.");
+    return "andrea.cotza@heig-vd.ch";
   }
 
   @Override
