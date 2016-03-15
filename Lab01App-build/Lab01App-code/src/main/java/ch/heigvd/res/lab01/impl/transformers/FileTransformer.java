@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 
 /**
  * This abstract class implements the IFileVisitor interface and has the responsibility
@@ -58,6 +60,23 @@ public abstract class FileTransformer implements IFileVisitor {
        * writer has been decorated by the concrete subclass!). You need to write a loop to read the
        * characters and write them to the writer.
        */
+
+      BufferedReader buffReader = new BufferedReader(reader);
+      BufferedWriter buffdWriter = new BufferedWriter(writer);
+      int result;
+
+      while(true) {
+        result = buffReader.read();
+
+        // Exit the loop if there is nothing to read
+        if (result == -1)
+          break;
+
+        buffdWriter.write(result);
+      }
+
+      buffReader.close();
+      buffdWriter.close();
       
       reader.close();
       writer.flush();
